@@ -5,6 +5,8 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const nodemailer = require("nodemailer");
+const { authenticateToken } = require("../services/authentication");
+const { checkRole } = require("../services/checkRole");
 
 router.post("/signup", (req, res) => {
   let user = req.body;
@@ -137,6 +139,74 @@ router.post("/forgotPassword", (req, res) => {
         .status(200)
         .json({ message: "Password sent to your email id" });
     });
+  });
+});
+
+router.get("/getUsers", authenticateToken, checkRole, (req, res) => {
+  var query =
+    "select id ,name,email,contactNumber,status from users where role='user'";
+  connection.query(query, (err, results) => {
+    if (!err) {
+      return res.status(200).json(results);
+    } else {
+      return res.status(500).json(err);
+    }
+  });
+});
+
+router.patch("/updateStatus", authenticateToken, checkRole, (req, res) => {
+  let user = req.body;
+  var query = "update users set status=? where id=?";
+  connection.query(query, [user.status, user.id], (err, results) => {
+    if (!err) {
+      if (results.affectedRows == 0) {
+        return res.status(404).json({ message: "User Not Found" });
+      } else {
+        return res
+          .status(200)
+          .json({ message: "User status Updated successfully" });
+      }
+    } else {
+      return res.status(500).json(err);
+    }
+  });
+});
+
+router.get("/checkToken", authenticateToken, (req, res) => {
+  return res.status(200).json({ message: "true" });
+});
+
+router.post("/changePassword",authenticateToken, (req, res) => {
+  const user = req.body;
+  const email = req.body.email;
+  var query = "select * from users where email=? and password=?";
+  connection.query(query, [email, user.oldPassword], (err, results) => {
+    if (!err) {
+      if (results.length <= 0) {
+        return res
+          .status(400)
+          .json({ message: "Invalid Email or Old Password" });
+      } else if (results[0].password == user.oldPassword) {
+        var updateQuery = "update users set password=? where email=?";
+        connection.query(
+          updateQuery,
+          [user.newPassword, email],
+          (err, results) => {
+            if (!err) {
+              return res
+                .status(200)
+                .json({ message: "Password changed successfully" });
+            } else {
+              return res.status(500).json(err);
+            }
+          }
+        );
+      } else {
+        return res.status(400).json({ message: "Something went wrong" });
+      }
+    } else {
+      return res.status(500).json(err);
+    }
   });
 });
 
