@@ -61,7 +61,7 @@ router.post("/login", (req, res) => {
     }
   });
 });
-var transporter  = nodemailer.createTransport({
+var transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.EMAIL,
@@ -85,15 +85,46 @@ router.post("/forgotPassword", (req, res) => {
 
     // user found → send mail
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: `"Cafe Management System" <${process.env.EMAIL}>`,
       to: results[0].email,
-      subject: "Password by Cafe Management System",
+      subject: "☕ Your Cafe Management System Login Details",
       html: `
-        <p>Your login details for Cafe Management System</p>
-        <p>Email: <b>${results[0].email}</b></p>
-        <p>Password: <b>${results[0].password}</b></p>
-        <a href="http://localhost:4200/">Click to login</a>
-      `,
+  <div style="font-family: Arial, sans-serif; background-color: #f9fafb; padding: 30px;">
+    <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden;">
+      <div style="background-color: #2b6777; color: #ffffff; text-align: center; padding: 20px 10px;">
+        <h2 style="margin: 0;">Cafe Management System</h2>
+        <p style="margin: 0; font-size: 14px;">Your password recovery email</p>
+      </div>
+      
+      <div style="padding: 25px 30px; color: #333333;">
+        <p style="font-size: 16px;">Hi <b>${results[0].email}</b>,</p>
+        <p style="font-size: 15px;">Here are your login details for accessing the <b>Cafe Management System</b>:</p>
+        
+        <div style="background-color: #f1f5f9; padding: 15px; border-radius: 8px; margin: 15px 0;">
+          <p style="margin: 5px 0;"><b>Email:</b> ${results[0].email}</p>
+          <p style="margin: 5px 0;"><b>Password:</b> ${results[0].password}</p>
+        </div>
+        
+        <p style="font-size: 15px;">You can log in to your account using the button below:</p>
+        
+        <div style="text-align: center; margin: 25px 0;">
+          <a href="http://localhost:4200/" 
+             style="background-color: #52ab98; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+             🔑 Login to Cafe Portal
+          </a>
+        </div>
+
+        <p style="font-size: 13px; color: #666666;">
+          ⚠️ We recommend changing your password after logging in for better security.
+        </p>
+      </div>
+
+      <div style="background-color: #f3f4f6; text-align: center; padding: 12px; font-size: 12px; color: #888888;">
+        <p style="margin: 0;">© 2025 Cafe Management System. All rights reserved.</p>
+      </div>
+    </div>
+  </div>
+  `,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
@@ -102,7 +133,9 @@ router.post("/forgotPassword", (req, res) => {
         return res.status(500).json({ message: "Failed to send email" });
       }
       console.log("✅ Email sent:", info.response);
-      return res.status(200).json({ message: "Password sent to your email id" });
+      return res
+        .status(200)
+        .json({ message: "Password sent to your email id" });
     });
   });
 });
