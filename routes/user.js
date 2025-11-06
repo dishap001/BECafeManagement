@@ -1,6 +1,5 @@
 const express = require("express");
 const connection = require("../connection");
-const e = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
@@ -8,23 +7,36 @@ const nodemailer = require("nodemailer");
 const { authenticateToken } = require("../services/authentication");
 const { checkRole } = require("../services/checkRole");
 
+/* ============================================================
+   ✅ 1. USER SIGNUP
+   URL: POST /user/signup
+   Access: Public
+   Body Example:
+   {
+     "name": "Disha",
+     "contactNumber": "9898982299",
+     "email": "disha@gmail.com",
+     "password": "123456"
+   }
+=============================================================== */
 router.post("/signup", (req, res) => {
   let user = req.body;
   const selectQuery =
     "select email,password,role,status from users where email=?";
+
   connection.query(selectQuery, [user.email], (err, results) => {
     if (!err) {
       if (results.length <= 0) {
-        query =
+        const query =
           "insert into users (name,contactNumber,email,password,role,status) values(?,?,?,?,'false','user')";
         connection.query(
           query,
           [user.name, user.contactNumber, user.email, user.password],
           (err, results) => {
             if (!err) {
-              return res
-                .status(200)
-                .json({ message: "Successfully Registered" });
+              return res.status(200).json({
+                message: "Successfully Registered",
+              });
             } else {
               return res.status(500).json(err);
             }
@@ -39,6 +51,17 @@ router.post("/signup", (req, res) => {
   });
 });
 
+/* ============================================================
+   ✅ 2. USER LOGIN
+   URL: POST /user/login
+   Access: Public
+   Body Example:
+   {
+     "email": "admin@gmail.com",
+     "password": "admin"
+   }
+   ✅ Response: JWT Token
+=============================================================== */
 router.post("/login", (req, res) => {
   const user = req.body;
   const selectQuery =
@@ -63,6 +86,17 @@ router.post("/login", (req, res) => {
     }
   });
 });
+
+/* ============================================================
+   ✅ 3. FORGOT PASSWORD
+   URL: POST /user/forgotPassword
+   Access: Public
+   Body Example:
+   {
+     "email": "disha@gmail.com"
+   }
+   ✅ Sends password to user email
+=============================================================== */
 var transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -142,6 +176,11 @@ router.post("/forgotPassword", (req, res) => {
   });
 });
 
+/* ============================================================
+   ✅ 4. GET ALL USERS
+   URL: GET /user/getUsers
+   Access: Admin Only
+=============================================================== */
 router.get("/getUsers", authenticateToken, checkRole, (req, res) => {
   var query =
     "select id ,name,email,contactNumber,status from users where role='user'";
@@ -154,6 +193,16 @@ router.get("/getUsers", authenticateToken, checkRole, (req, res) => {
   });
 });
 
+/* ============================================================
+   ✅ 5. UPDATE USER STATUS
+   URL: PATCH /user/updateStatus
+   Access: Admin Only
+   Body Example:
+   {
+     "id": 2,
+     "status": "true"
+   }
+=============================================================== */
 router.patch("/updateStatus", authenticateToken, checkRole, (req, res) => {
   let user = req.body;
   var query = "update users set status=? where id=?";
@@ -172,11 +221,27 @@ router.patch("/updateStatus", authenticateToken, checkRole, (req, res) => {
   });
 });
 
+/* ============================================================
+   ✅ 6. CHECK TOKEN VALIDITY
+   URL: GET /user/checkToken
+   Access: Logged-in Users
+=============================================================== */
 router.get("/checkToken", authenticateToken, (req, res) => {
   return res.status(200).json({ message: "true" });
 });
 
-router.post("/changePassword",authenticateToken, (req, res) => {
+/* ============================================================
+   ✅ 7. CHANGE PASSWORD
+   URL: POST /user/changePassword
+   Access: Logged-in Users
+   Body Example:
+   {
+     "email": "admin@gmail.com",
+     "oldPassword": "admin",
+     "newPassword": "admin123"
+   }
+=============================================================== */
+router.post("/changePassword", authenticateToken, (req, res) => {
   const user = req.body;
   const email = req.body.email;
   var query = "select * from users where email=? and password=?";
