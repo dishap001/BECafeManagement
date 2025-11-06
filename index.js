@@ -5,6 +5,7 @@ const connection = require("./connection");
 const categoryRoutes = require("./routes/category");
 const productRoutes = require("./routes/product");
 const billsRoutes = require("./routes/bill");
+const dashboardRoutes = require("./routes/dashboard");
 const app = express();
 // Middleware
 app.use(cors());
@@ -14,6 +15,7 @@ app.use("/user", userRoutes);
 app.use("/category", categoryRoutes);
 app.use("/product", productRoutes);
 app.use("/bills", billsRoutes);
+app.use("/dashboard", dashboardRoutes);
 // Test route
 app.get("/", (req, res) => {
   res.send("Welcome to the Cafe Management System API");
