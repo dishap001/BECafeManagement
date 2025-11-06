@@ -1,55 +1,136 @@
+<!DOCTYPE html>
 <html>
-  <header>
-    <style>
-      table {
-        font-size: arial, sans-serif;
-        border-collapse: collapse;
-        width: 100%;
-      }
-      td,
-      th {
-        border: 1px solid #dddddd;
-        text-align: left;
-        padding: 8px;
-      }
-    </style>
-  </header>
-  <body>
-    <h3 style="text-align:center">Cafe Management System</h3>
-    <table>
-      <tr>
-        <th>Name: <%= name%></th>
-        <th> Email: <%= email %></th>
-      </tr>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Cafe Management System - Invoice</title>
+
+  <style>
+    body {
+      font-family: "Arial", sans-serif;
+      margin: 20px;
+      color: #333;
+      padding: 0;
+    }
+
+    h2,
+    h3 {
+      text-align: center;
+      margin: 10px 0;
+      font-weight: 600;
+    }
+
+    .invoice-header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #444;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    th {
+      background-color: #2b6777;
+      color: #fff;
+      padding: 10px;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    td {
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f7f7f7;
+    }
+
+    .summary {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: right;
+      padding-right: 10px;
+    }
+
+    .thankyou {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 16px;
+      color: #2b6777;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="invoice-header">
+    <h2>Cafe Management System</h2>
+    <p style="margin-top:5px;">Customer Invoice</p>
+  </div>
+
+  <!-- Customer Details -->
+  <table>
     <tr>
-        <th>Contact Number: <%= contactNumber %></th>
-        <th> Payment Method: <%= paymentMethod %></th>
+      <th>Name</th>
+      <td><%= name %></td>
+      <th>Email</th>
+      <td><%= email %></td>
     </tr>
-    </table>
-    <h3 style="text-align:center">Product Details</h3>
-      <table>
+
+    <tr>
+      <th>Contact Number</th>
+      <td><%= contactNumber %></td>
+      <th>Payment Method</th>
+      <td><%= paymentMethod %></td>
+    </tr>
+  </table>
+
+  <h3>Product Details</h3>
+
+  <!-- Product Table -->
+  <table>
+    <thead>
       <tr>
-        <th>Name</th>
-        <th> Category</th>
-        <th> Quantity</th>
-        <th> Price</th>
-        <th> Sub Total</th>
+        <th>Product</th>
+        <th>Category</th>
+        <th>Quantity</th>
+        <th>Price (₹)</th>
+        <th>Sub Total (₹)</th>
       </tr>
-  <% if(productDetails.length > 0){ %>
-    <% productDetails.forEach(product => { %>
-      <tr>
-        <td><%= product.name %></td>
-        <td><%= product.category %></td>
-        <td><%= product.quantity %></td>
-        <td><%= product.price %></td>
-        <td><%= product.total %></td>
-      </tr>
-    <% }); %>
-    <% } %>
-       
-    </table>
-    <h3 >Grand Total: <%= totalAmount %></h3>
-    <h3>Thank You for visiting again</h3>
-  </body>
-  
+    </thead>
+
+    <tbody>
+      <% if(productDetails.length > 0){ %>
+        <% productDetails.forEach(product => { %>
+          <tr>
+            <td><%= product.name %></td>
+            <td><%= product.category %></td>
+            <td><%= product.quantity %></td>
+            <td><%= product.price %></td>
+            <td><%= product.total %></td>
+          </tr>
+        <% }); %>
+      <% } %>
+    </tbody>
+  </table>
+
+  <div class="summary">
+    Grand Total: ₹<%= totalAmount %>
+  </div>
+
+  <div class="thankyou">
+    Thank you for visiting! ❤️<br />
+    We hope to serve you again.
+  </div>
+
+</body>
+
 </html>
